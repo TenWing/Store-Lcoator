@@ -64,11 +64,33 @@ function createMarker(latlng, name, address) {
     var html = "<b>" + name + "</b> <br/>" + address;
     var marker = new google.maps.Marker({
         map: map,
-        position: latlng
+        position: latlng,
+        zIndex: 1
     });
     google.maps.event.addListener(marker, 'click', function() {
         infoWindow.setContent(html);
         infoWindow.open(map, marker);
     });
     markers.push(marker);
+}
+
+/**
+ * Adds the user's adress on the map as a marker
+ * @param position the position geocoded for the marker
+ */
+function addUserMarker(position) {
+    var user = new google.maps.Marker({
+        position: position,
+        map: map,
+        icon: "user_location.png",
+        zIndex: 10
+    });
+
+
+    google.maps.event.addListener(user, 'click', function() {
+        infoWindow.setContent("<b>" + userAdress + "</b><br/>" + center.lat + ", " + center.lng);
+        infoWindow.open(map, user);
+    });
+
+    markers.push(user);
 }

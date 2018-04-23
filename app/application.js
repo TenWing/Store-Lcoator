@@ -20,6 +20,12 @@ function displayAllLocations() {
  */
 function addLocations(_locations) {
 
+    _locations.sort(function(a, b){
+        if(a.distance < b.distance) return -1;
+        if(a.distance > b.distance) return 1;
+        return 0;
+    });
+
     var bounds = new google.maps.LatLngBounds();
 
     for (var i = 0; i < _locations.length; i++) {
@@ -67,7 +73,7 @@ function clearLocations() {
 function createOption(name, distance, num) {
     var option = document.createElement("option");
     option.value = num;
-    option.innerHTML = name;
+    option.innerHTML = name + " : " + (distance / 1000).toFixed(1) + "km";
     locationSelect.appendChild(option);
 }
 
