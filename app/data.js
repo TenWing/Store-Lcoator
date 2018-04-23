@@ -4,7 +4,7 @@
  * All the store locations used by the application
  * @type {Object}
  */
-var locations = {
+var locationsData = {
     "locations": [
         {
             "name": "H&M",
@@ -125,6 +125,6 @@ var locations = {
             "address": "3 Rue le Bastard, 35000 Rennes",
             "lat": "48.112693",
             "lng": "-1.679472"
-        },
+        }
     ]
 };

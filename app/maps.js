@@ -18,12 +18,18 @@ var markers = [];
 var infoWindow;
 
 /**
+ * Map center, centered on Rennes, France
+ * @type {Object}
+ */
+var center = {lat: 48.110049, lng: -1.677813};
+
+/**
  * Initialization function
  * - initializes google map
  * - initializes DOM elements
  */
 function initMap() {
-    var rennes = {lat: 48.110049, lng: -1.677813};
+    var rennes = center;
     map = new google.maps.Map(document.getElementById('map'), {
         center: rennes,
         zoom: 11,
@@ -43,6 +49,9 @@ function initMap() {
             google.maps.event.trigger(markers[markerNum], 'click');
         }
     };
+
+    // Calls to init the application after maps inits
+    init();
 }
 
 /**
