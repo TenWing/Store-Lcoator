@@ -1,7 +1,8 @@
 'use-strict';
 
 /**
- * All the store locations used by the application
+ * All the stores locations used by the application
+ * considered as th Database (DB)
  * @type {Object}
  */
 var locationsData = {
