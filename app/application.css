@@ -1,21 +1,54 @@
+/* Default font for the application */
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
 /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
 #map {
     height: 100%;
 }
 
+/* Style for the form area */
 #form {
     margin: 10px;
 }
 
-/* Optional: Makes the sample page fill the window. */
+/* width occupied by the input text to read the autocomplete suggestions */
+#addressInput {
+    width: 17%;
+}
+
+/* Style for the research results */
+#locationSelect {
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+/* Makes the sample page fill the window. */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
+/* Makes the sample page fill the window. */
 body {
     margin:0px;
     padding:0px;
+}
+
+/* Makes one div (the modal) float on top of everything */
+#modal {
+    position: fixed;
+    top: 15%;
+    z-index: 1;
+    background: white;
+    border: solid 1px;
+    margin-left: 1%;
+    padding-left: 1%;
+    padding-right: 1%;
+    max-width: 40%;
+    max-height: 30%;
+    overflow: scroll
 }

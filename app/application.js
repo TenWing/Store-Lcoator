@@ -6,49 +6,44 @@
 var locationSelect;
 
 /**
- * Checks user input to search places around
- * the address matching the given input
+ * If we display the modal for directions
+ * @type {boolean}
  */
-function searchLocations() {
-    var address = document.getElementById("addressInput").value;
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode({address: address}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            searchLocationsNear(results[0].geometry.location);
-        } else {
-            alert(address + ' not found');
-        }
-    });
-}
+var showDirectionsModal = false;
 
 /**
- * Clears all markers indicating locations on the map
+ * Resets all fields an displays all locations in the application
+ * called the first time on arriving in the application
  */
-function clearLocations() {
-    infoWindow.close();
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-    }
-    markers.length = 0;
-
-    locationSelect.innerHTML = "";
-    var option = document.createElement("option");
-    option.value = "none";
-    option.innerHTML = "See all results:";
-    locationSelect.appendChild(option);
-}
-
-/**
- * Searches locations near the given adress
- * @param center the center point for the research
- */
-function searchLocationsNear(center) {
+function displayAllLocations() {
+    // Wipes all markers and researchc results
     clearLocations();
-    var radius = document.getElementById('radiusSelect').value;
-    var nearLocations = retrieveNearLocations(locations, center, radius);
+
+    // Adds all locations in the DB on screen
+    addLocations(locationsData.locations);
+}
+
+/**
+ * Adds a list of locations to the application
+ * @param _locations the array of application
+ */
+function addLocations(_locations) {
+
+    // We sort the locations given by distance
+    _locations.sort(function(a, b){
+        if(a.distance < b.distance) return -1;
+        if(a.distance > b.distance) return 1;
+        return 0;
+    });
+
     var bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < nearLocations.length; i++) {
-        var location = nearLocations[i];
+
+    // we use the optionIndex because there is also the marker for the user's address that is not a location in the DB
+    var optionIndex = locationSelect.options.length - 1;
+
+    // For each location, create marker & option
+    for (var i = 0; i < _locations.length; i++) {
+        var location = _locations[i];
         var name = location.name;
         var address = location.address;
         var distance = parseFloat(location.distance);
@@ -56,76 +51,95 @@ function searchLocationsNear(center) {
             parseFloat(location.lat),
             parseFloat(location.lng));
 
-        createOption(name, distance, i);
+        createOption(name, distance, optionIndex + i);
         createMarker(latlng, name, address);
         bounds.extend(latlng);
     }
+
+    // Extends the map view to fit all locations
     map.fitBounds(bounds);
-    locationSelect.style.visibility = "visible";
-    locationSelect.onchange = function() {
-        var markerNum = locationSelect.options[locationSelect.selectedIndex].value;
-        google.maps.event.trigger(markers[markerNum], 'click');
-    };
 }
 
-/**
- * Computes distance between 2 points in lat long (degrees)
- * @param lat1 lat of point 1
- * @param lon1 lng of point 1
- * @param lat2 lat of point 2
- * @param lon2 olng of point 2
- * @return {number} the distance in meters
- */
-function distanceBetween(lat1, lon1, lat2, lon2) {
-
-    function radians(_degrees) {
-        return _degrees * Math.PI / 180;
-    }
-
-    var R = 6371e3;
-    var d1 = radians(lat1);
-    var d2 = radians(lat2);
-    var d3 = radians((lat2-lat1));
-    var d4 = radians((lon2-lon1));
-
-    var a = Math.sin(d3/2) * Math.sin(d3/2) +
-        Math.cos(d1) * Math.cos(d2) *
-        Math.sin(d4/2) * Math.sin(d4/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-    return R * c;
-}
 
 /**
- * Retrieves the locations that are near the center using the data
- * @param data the locations searched through
- * @param center the center point of the research
- * @param radius the radius limitation for the research
- * @return {Array} the locations
+ * Clears all markers indicating locations on the map
+ * also clears research results in locationsSelect
  */
-function retrieveNearLocations(data, center, radius) {
-    var near = [];
-    for(var i = 0; i < data.locations.length; i++) {
-        var location = data.locations[i];
-        var distance = distanceBetween(center.lat(), center.lng(), location.lat, location.lng) / 1000;
-        if( distance < radius ) {
-            location.distance = distance;
-            near.push(location);
-        }
+function clearLocations() {
+
+    // Closes the infoWindow
+    infoWindow.close();
+
+    // Wipes all markers
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
     }
-    return near;
+    markers.length = 0;
+
+    // Resets the research results
+    locationSelect.innerHTML = "";
+    var option = document.createElement("option");
+    option.value = "none";
+    option.innerHTML = "See all results:";
+    locationSelect.appendChild(option);
 }
 
 
 /**
  * Creates on option containing the given :
  * @param name name of option
- * @param distance distance to origin adress
- * @param num value displayed in the option
+ * @param distance distance to origin address
+ * @param num the index in the markers tab for this option (used to trigger click event)
  */
 function createOption(name, distance, num) {
     var option = document.createElement("option");
     option.value = num;
-    option.innerHTML = name;
+    option.innerHTML = name + " : " + (distance / 1000).toFixed(1) + "km";
     locationSelect.appendChild(option);
+}
+
+/**
+ * Enables / disables the modal showing directions instructions
+ */
+function toggleModal() {
+    if(!showDirectionsModal) {
+        document.getElementById("modal").style.visibility = "visible";
+        showDirectionsModal = true;
+    }
+    else {
+        document.getElementById("modal").style.visibility = "hidden";
+        showDirectionsModal = false;
+    }
+}
+
+/**
+ * Hides the modal whenever needed
+ */
+function hideModal() {
+    document.getElementById("modal").style.visibility = "hidden";
+    showDirectionsModal = false;
+}
+
+/**
+ * Resets the UI whenever needed
+ */
+function resetUi() {
+    // Resets modal
+    document.getElementById("modalToggle").disabled = "true";
+    document.getElementById("modal").style.visibility = "hidden";
+    showDirectionsModal = false;
+
+    // Resets directions displayed
+    directionsDisplay.setMap(null);
+
+    // Wipes all research results & markers
+    clearLocations();
+}
+
+/**
+ * Initializes the application
+ * wil be called when maps is initialized
+ */
+function init() {
+    displayAllLocations();
 }
