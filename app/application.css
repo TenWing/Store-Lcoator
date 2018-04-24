@@ -12,6 +12,15 @@
     margin: 10px;
 }
 
+#addressInput {
+    width: 17%;
+}
+
+#locationSelect {
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
 /* Optional: Makes the sample page fill the window. */
 html, body {
     height: 100%;

@@ -11,6 +11,11 @@ var map;
 var directionsDisplay;
 
 /**
+ * Object used for autocomplete search inputs
+ */
+var autocomplete;
+
+/**
  * Markers displayed on the map
  * @type {Array}
  */
@@ -46,6 +51,9 @@ function initMap() {
 
     directionsDisplay = new google.maps.DirectionsRenderer();
     directionsDisplay.setMap(map);
+
+    autocomplete = new google.maps.places.Autocomplete(document.getElementById("addressInput"));
+    autocomplete.bindTo('bounds', map);
 
     document.getElementById("searchButton").onclick = searchLocations;
 
