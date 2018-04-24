@@ -5,6 +5,10 @@
  */
 var map;
 
+/**
+ * Object used to render directions on the map
+ */
+var directionsDisplay;
 
 /**
  * Markers displayed on the map
@@ -40,10 +44,13 @@ function initMap() {
     });
     infoWindow = new google.maps.InfoWindow();
 
+    directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
+
     document.getElementById("searchButton").onclick = searchLocations;
 
     locationSelect = document.getElementById("locationSelect");
-    locationSelect.onchange = function() {
+    locationSelect.onselect = function() {
         var markerNum = locationSelect.options[locationSelect.selectedIndex].value;
         if (markerNum != "none") {
             google.maps.event.trigger(markers[markerNum], 'click');
@@ -67,10 +74,16 @@ function createMarker(latlng, name, address) {
         position: latlng,
         zIndex: 1
     });
+
     google.maps.event.addListener(marker, 'click', function() {
         infoWindow.setContent(html);
         infoWindow.open(map, marker);
+
+        if(userAddress.address != undefined && userAddress.position != undefined) {
+            computeDirectionsTo(latlng);
+        }
     });
+
     markers.push(marker);
 }
 
@@ -86,11 +99,46 @@ function addUserMarker(position) {
         zIndex: 10
     });
 
-
     google.maps.event.addListener(user, 'click', function() {
-        infoWindow.setContent("<b>" + userAdress + "</b><br/>" + center.lat + ", " + center.lng);
+        infoWindow.setContent("<b>" + userAddress.address + "</b><br/>" + center.lat + ", " + center.lng);
         infoWindow.open(map, user);
     });
 
     markers.push(user);
+    createOption("User adress", 0, 0);
+}
+
+/**
+ * Computes the direction to the given position from the user's address
+ * displays it on the map
+ * @param position the position to go to
+ */
+function computeDirectionsTo(position) {
+
+    directionsDisplay.setMap(map);
+    var directionsService = new google.maps.DirectionsService();
+
+    var request = {
+        origin: userAddress.position,
+        destination: position,
+        travelMode: 'DRIVING'
+    };
+
+    directionsService.route(request, function(result, status) {
+        if (status == 'OK') {
+            directionsDisplay.setDirections(result);
+            var div = document.getElementById("directionsInstructions");
+            var leg = result.routes[0].legs[0];
+            div.innerHTML = "<p></p><b>From </b>" + leg.start_address + " <b> to </b>" + leg.end_address + "</p>";
+            div.innerHTML += "<p>distance : " + leg.distance.text + "<br/>" + "duration : " + leg.duration.text + "</p>";
+
+            for(var i = 0; i < leg.steps.length; i++) {
+                var step = leg.steps[i];
+                div.innerHTML += "<p>" + step.instructions + "</p>"
+            }
+
+            document.getElementById("modalToggle").disabled = undefined;
+            hideModal();
+        }
+    });
 }

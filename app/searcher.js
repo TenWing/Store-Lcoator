@@ -2,20 +2,24 @@
 
 /**
  * The adress of the user
+ * .address : textual
+ * .position : lat lng object
  */
-var userAdress;
+var userAddress = {};
 
 /**
  * Checks user input to search places around
  * the address matching the given input
  */
 function searchLocations() {
+    resetUi();
     var address = document.getElementById("addressInput").value;
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode({address: address}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             var position = results[0].geometry.location;
-            userAdress = address;
+            userAddress.address = address;
+            userAddress.position = position;
             searchLocationsNear(position);
             addUserMarker(position);
         } else {

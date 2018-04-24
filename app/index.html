@@ -17,10 +17,15 @@
             <option value="2">2 kms</option>
         </select>
         <input type="button" id="searchButton" value="Search"/>
+        <button id="modalToggle" onclick="toggleModal()" disabled>Display / Hide directions instructions</button>
     </div>
 
     <div>
-        <select id="locationSelect" style="width: 10%; visibility: hidden"></select>
+        <select id="locationSelect" style="width: 20%; visibility: hidden"></select>
+    </div>
+
+    <div id="modal" style="visibility: hidden">
+        <div id="directionsInstructions"></div>
     </div>
 
     <div id="map" style="width: 100%; height: 90%"></div>

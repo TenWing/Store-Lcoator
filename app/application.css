@@ -19,3 +19,17 @@ body {
     margin:0px;
     padding:0px;
 }
+
+#modal {
+    position: fixed;
+    top: 15%;
+    z-index: 1;
+    background: white;
+    border: solid 1px;
+    margin-left: 1%;
+    padding-left: 1%;
+    padding-right: 1%;
+    max-width: 40%;
+    max-height: 30%;
+    overflow: scroll
+}

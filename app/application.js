@@ -6,6 +6,12 @@
 var locationSelect;
 
 /**
+ * If we display the modal for directions
+ * @type {boolean}
+ */
+var showDirectionsModal = false;
+
+/**
  * Resets all fields an displays all locations in the application
  * called the first time on arriving in the application
  */
@@ -27,6 +33,7 @@ function addLocations(_locations) {
     });
 
     var bounds = new google.maps.LatLngBounds();
+    var optionIndex = locationSelect.options.length - 1;
 
     for (var i = 0; i < _locations.length; i++) {
         var location = _locations[i];
@@ -37,7 +44,7 @@ function addLocations(_locations) {
             parseFloat(location.lat),
             parseFloat(location.lng));
 
-        createOption(name, distance, i);
+        createOption(name, distance, optionIndex + i);
         createMarker(latlng, name, address);
         bounds.extend(latlng);
     }
@@ -75,6 +82,39 @@ function createOption(name, distance, num) {
     option.value = num;
     option.innerHTML = name + " : " + (distance / 1000).toFixed(1) + "km";
     locationSelect.appendChild(option);
+}
+
+/**
+ * Enables / disables the modal showing directions instructions
+ */
+function toggleModal() {
+    if(!showDirectionsModal) {
+        document.getElementById("modal").style.visibility = "visible";
+        showDirectionsModal = true;
+    }
+    else {
+        document.getElementById("modal").style.visibility = "hidden";
+        showDirectionsModal = false;
+    }
+}
+
+/**
+ * Hides the modal whenever needed
+ */
+function hideModal() {
+    document.getElementById("modal").style.visibility = "hidden";
+    showDirectionsModal = false;
+}
+
+/**
+ * Resets the UI whenever needed
+ */
+function resetUi() {
+    document.getElementById("modalToggle").disabled = "true";
+    document.getElementById("modal").style.visibility = "hidden";
+    showDirectionsModal = false;
+    directionsDisplay.setMap(null);
+    clearLocations();
 }
 
 /**
