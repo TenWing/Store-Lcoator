@@ -16,7 +16,10 @@ var showDirectionsModal = false;
  * called the first time on arriving in the application
  */
 function displayAllLocations() {
+    // Wipes all markers and researchc results
     clearLocations();
+
+    // Adds all locations in the DB on screen
     addLocations(locationsData.locations);
 }
 
@@ -26,6 +29,7 @@ function displayAllLocations() {
  */
 function addLocations(_locations) {
 
+    // We sort the locations given by distance
     _locations.sort(function(a, b){
         if(a.distance < b.distance) return -1;
         if(a.distance > b.distance) return 1;
@@ -33,8 +37,11 @@ function addLocations(_locations) {
     });
 
     var bounds = new google.maps.LatLngBounds();
+
+    // we use the optionIndex because there is also the marker for the user's address that is not a location in the DB
     var optionIndex = locationSelect.options.length - 1;
 
+    // For each location, create marker & option
     for (var i = 0; i < _locations.length; i++) {
         var location = _locations[i];
         var name = location.name;
@@ -49,20 +56,27 @@ function addLocations(_locations) {
         bounds.extend(latlng);
     }
 
+    // Extends the map view to fit all locations
     map.fitBounds(bounds);
 }
 
 
 /**
  * Clears all markers indicating locations on the map
+ * also clears research results in locationsSelect
  */
 function clearLocations() {
+
+    // Closes the infoWindow
     infoWindow.close();
+
+    // Wipes all markers
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
     }
     markers.length = 0;
 
+    // Resets the research results
     locationSelect.innerHTML = "";
     var option = document.createElement("option");
     option.value = "none";
@@ -74,8 +88,8 @@ function clearLocations() {
 /**
  * Creates on option containing the given :
  * @param name name of option
- * @param distance distance to origin adress
- * @param num value displayed in the option
+ * @param distance distance to origin address
+ * @param num the index in the markers tab for this option (used to trigger click event)
  */
 function createOption(name, distance, num) {
     var option = document.createElement("option");
@@ -110,10 +124,15 @@ function hideModal() {
  * Resets the UI whenever needed
  */
 function resetUi() {
+    // Resets modal
     document.getElementById("modalToggle").disabled = "true";
     document.getElementById("modal").style.visibility = "hidden";
     showDirectionsModal = false;
+
+    // Resets directions displayed
     directionsDisplay.setMap(null);
+
+    // Wipes all research results & markers
     clearLocations();
 }
 
